@@ -36,9 +36,8 @@ def test_build_archive_record_includes_subagents_and_tool_results(tmp_path):
     session_dir = tmp_path
     transcript = session_dir / "session.jsonl"
     transcript.write_text(
-        json.dumps({
-            "message": {"content": [{"text": "see tool-results/abc123.txt"}]}
-        }) + "\n"
+        json.dumps({"message": {"content": [{"text": "see tool-results/abc123.txt"}]}})
+        + "\n"
     )
 
     subagents_dir = session_dir / "subagents"
@@ -59,8 +58,13 @@ def test_build_archive_record_includes_subagents_and_tool_results(tmp_path):
 
     assert len(record["subagents"]) == 1
     assert record["subagents"][0]["agent_id"] == "xyz"
-    assert record["subagents"][0]["meta"] == {"agentType": "Explore", "description": "test agent"}
-    assert record["subagents"][0]["turns"] == [{"message": {"content": [{"text": "hi"}]}}]
+    assert record["subagents"][0]["meta"] == {
+        "agentType": "Explore",
+        "description": "test agent",
+    }
+    assert record["subagents"][0]["turns"] == [
+        {"message": {"content": [{"text": "hi"}]}}
+    ]
 
     assert record["tool_results"] == {"abc123": "big tool output"}
 

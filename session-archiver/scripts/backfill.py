@@ -6,7 +6,6 @@ cleanupPeriodDays default. Skips sessions already archived unless --force.
 
 import argparse
 import json
-import sys
 from pathlib import Path
 
 import archive_lib

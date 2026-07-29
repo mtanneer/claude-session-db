@@ -17,14 +17,37 @@ retention policy (`~/.claude/projects/` transcripts are auto-deleted after
 
 ```json
 {
-  "schema_version": 1,
+  "schema_version": 2,
   "session_id": "...",
   "project_path": "...",
   "archived_at": "2026-07-22T...",
   "source_transcript_path": "~/.claude/projects/.../<id>.jsonl",
-  "turns": [ /* raw transcript lines, as-is */ ]
+  "turns": [ /* raw transcript lines, as-is */ ],
+  "subagents": [
+    {
+      "agent_id": "...",
+      "meta": { /* raw agent-<id>.meta.json, as-is */ },
+      "turns": [ /* raw subagents/agent-<id>.jsonl lines, as-is */ ]
+    }
+  ],
+  "tool_results": {
+    "<hash>": "raw contents of tool-results/<hash>.txt, only for hashes referenced in turns/subagents"
+  }
 }
 ```
+
+`v1` archives have no `subagents`/`tool_results` fields — treat their absence
+as "not captured," not as "empty." `schema_version: 2` adds:
+
+- **`subagents`** — Task-tool subagent runs, normally written to a sibling
+  `subagents/agent-<agentId>.jsonl` (+ `.meta.json`) next to the main
+  transcript and never inlined into it. Without this, delegated-agent work
+  ages out with the rest of `~/.claude/projects/` on the same
+  `cleanupPeriodDays` timer.
+- **`tool_results`** — large tool outputs Claude Code offloads to
+  `tool-results/<hash>.txt`, referenced by hash from `turns`/`subagents`
+  instead of inlined. Only hashes actually referenced are archived, so this
+  doesn't sweep in unrelated leftover files.
 
 ## Not doing
 

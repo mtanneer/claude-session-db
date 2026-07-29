@@ -50,12 +50,22 @@ Normalized archive record, one JSON file per session at
 
 ```json
 {
-  "schema_version": 1,
+  "schema_version": 2,
   "session_id": "...",
   "project_path": "...",
   "archived_at": "2026-07-22T...",
   "source_transcript_path": "~/.claude/projects/.../<id>.jsonl",
-  "turns": [ /* raw transcript lines, as-is */ ]
+  "turns": [ /* raw transcript lines, as-is */ ],
+  "subagents": [
+    {
+      "agent_id": "...",
+      "meta": { /* raw agent-<id>.meta.json, as-is */ },
+      "turns": [ /* raw subagents/agent-<id>.jsonl lines, as-is */ ]
+    }
+  ],
+  "tool_results": {
+    "<hash>": "raw contents of tool-results/<hash>.txt, only for hashes referenced in turns/subagents"
+  }
 }
 ```
 
@@ -63,6 +73,13 @@ Normalized archive record, one JSON file per session at
 ("thin normalization" — wrap with stable metadata, never reinterpret
 turn content). `schema_version` exists so future changes to *this
 archive's* format (not Claude Code's) can be detected and migrated.
+`v2` adds `subagents` (Task-tool runs, normally written to a sibling
+`subagents/agent-<agentId>.jsonl` and never inlined into the main
+transcript) and `tool_results` (large tool outputs Claude Code offloads
+to `tool-results/<hash>.txt`, referenced by hash rather than inlined) —
+both previously excluded, so a "full transcript" archive still had gaps
+for delegated-agent work and large tool output. `v1` archives predate
+both fields; their absence there means "not captured," not "empty."
 
 Project-path encoding mirrors Claude Code's own `~/.claude/projects/<encoded>/`
 scheme (non-alphanumeric → `-`), but that scheme is known-lossy for

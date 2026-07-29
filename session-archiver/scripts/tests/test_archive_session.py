@@ -22,12 +22,47 @@ def test_build_archive_record_preserves_raw_turns(tmp_path):
 
     record = build_archive_record("sess-1", "/Users/foo/proj", str(transcript))
 
-    assert record["schema_version"] == 1
+    assert record["schema_version"] == 2
     assert record["session_id"] == "sess-1"
     assert record["project_path"] == "/Users/foo/proj"
     assert record["source_transcript_path"] == str(transcript)
     assert record["turns"] == [{"role": "user", "isMeta": True}, {"role": "assistant"}]
+    assert record["subagents"] == []
+    assert record["tool_results"] == {}
     assert "archived_at" in record
+
+
+def test_build_archive_record_includes_subagents_and_tool_results(tmp_path):
+    session_dir = tmp_path
+    transcript = session_dir / "session.jsonl"
+    transcript.write_text(
+        json.dumps({
+            "message": {"content": [{"text": "see tool-results/abc123.txt"}]}
+        }) + "\n"
+    )
+
+    subagents_dir = session_dir / "subagents"
+    subagents_dir.mkdir()
+    (subagents_dir / "agent-xyz.jsonl").write_text(
+        json.dumps({"message": {"content": [{"text": "hi"}]}}) + "\n"
+    )
+    (subagents_dir / "agent-xyz.meta.json").write_text(
+        json.dumps({"agentType": "Explore", "description": "test agent"})
+    )
+
+    results_dir = session_dir / "tool-results"
+    results_dir.mkdir()
+    (results_dir / "abc123.txt").write_text("big tool output")
+    (results_dir / "unreferenced.txt").write_text("should not be archived")
+
+    record = build_archive_record("sess-1", "/Users/foo/proj", str(transcript))
+
+    assert len(record["subagents"]) == 1
+    assert record["subagents"][0]["agent_id"] == "xyz"
+    assert record["subagents"][0]["meta"] == {"agentType": "Explore", "description": "test agent"}
+    assert record["subagents"][0]["turns"] == [{"message": {"content": [{"text": "hi"}]}}]
+
+    assert record["tool_results"] == {"abc123": "big tool output"}
 
 
 def test_write_archive_record_writes_expected_path(tmp_path):

@@ -19,10 +19,13 @@ def _make_transcript(path: Path, cwd: str, lines: int = 2):
 def test_run_archives_new_sessions(tmp_path, monkeypatch):
     projects_root = tmp_path / "projects"
     archive_root = tmp_path / "archive"
-    _make_transcript(projects_root / "-Users-foo-proj" / "sess-1.jsonl", "/Users/foo/proj")
+    _make_transcript(
+        projects_root / "-Users-foo-proj" / "sess-1.jsonl", "/Users/foo/proj"
+    )
 
     monkeypatch.setattr(backfill, "PROJECTS_ROOT", projects_root)
     import archive_lib
+
     monkeypatch.setattr(archive_lib, "ARCHIVE_ROOT", archive_root)
 
     archived, skipped = backfill.run(force=False)
@@ -35,10 +38,13 @@ def test_run_archives_new_sessions(tmp_path, monkeypatch):
 def test_run_skips_already_archived(tmp_path, monkeypatch):
     projects_root = tmp_path / "projects"
     archive_root = tmp_path / "archive"
-    _make_transcript(projects_root / "-Users-foo-proj" / "sess-1.jsonl", "/Users/foo/proj")
+    _make_transcript(
+        projects_root / "-Users-foo-proj" / "sess-1.jsonl", "/Users/foo/proj"
+    )
 
     monkeypatch.setattr(backfill, "PROJECTS_ROOT", projects_root)
     import archive_lib
+
     monkeypatch.setattr(archive_lib, "ARCHIVE_ROOT", archive_root)
 
     archived1, skipped1 = backfill.run(force=False)
@@ -51,10 +57,13 @@ def test_run_skips_already_archived(tmp_path, monkeypatch):
 def test_run_force_rearchives(tmp_path, monkeypatch):
     projects_root = tmp_path / "projects"
     archive_root = tmp_path / "archive"
-    _make_transcript(projects_root / "-Users-foo-proj" / "sess-1.jsonl", "/Users/foo/proj")
+    _make_transcript(
+        projects_root / "-Users-foo-proj" / "sess-1.jsonl", "/Users/foo/proj"
+    )
 
     monkeypatch.setattr(backfill, "PROJECTS_ROOT", projects_root)
     import archive_lib
+
     monkeypatch.setattr(archive_lib, "ARCHIVE_ROOT", archive_root)
 
     backfill.run(force=False)

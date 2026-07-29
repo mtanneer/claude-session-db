@@ -4,6 +4,7 @@ the session's transcript. SessionEnd is a terminal, unblockable event whose
 exit code Claude Code ignores — this must never raise, so any failure here
 stays invisible to the user rather than surfacing as a Claude Code error.
 """
+
 import json
 import sys
 

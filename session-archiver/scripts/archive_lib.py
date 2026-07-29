@@ -1,5 +1,6 @@
 #!/usr/bin/env python3
 """Shared normalization logic for archive_session.py and backfill.py."""
+
 import json
 import re
 from datetime import datetime, timezone
@@ -28,7 +29,9 @@ def read_turns(transcript_path: str) -> list:
     return turns
 
 
-def build_archive_record(session_id: str, project_path: str, transcript_path: str) -> dict:
+def build_archive_record(
+    session_id: str, project_path: str, transcript_path: str
+) -> dict:
     return {
         "schema_version": SCHEMA_VERSION,
         "session_id": session_id,
@@ -47,6 +50,8 @@ def write_archive_record(record: dict, archive_root: Path = ARCHIVE_ROOT) -> Pat
     return out_path
 
 
-def is_already_archived(session_id: str, project_path: str, archive_root: Path = ARCHIVE_ROOT) -> bool:
+def is_already_archived(
+    session_id: str, project_path: str, archive_root: Path = ARCHIVE_ROOT
+) -> bool:
     project_dir = archive_root / encode_project_path(project_path)
     return (project_dir / f"{session_id}.json").exists()

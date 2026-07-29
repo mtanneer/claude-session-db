@@ -3,9 +3,9 @@
 ~/.claude/projects/*/*.jsonl before it ages out under the 30-day
 cleanupPeriodDays default. Skips sessions already archived unless --force.
 """
+
 import argparse
 import json
-import sys
 from pathlib import Path
 
 import archive_lib
@@ -34,7 +34,9 @@ def run(force: bool) -> tuple[int, int]:
     for transcript_path in sorted(PROJECTS_ROOT.glob("*/*.jsonl")):
         session_id = transcript_path.stem
         project_path = transcript_cwd(transcript_path)
-        if not force and is_already_archived(session_id, project_path, archive_root=archive_root):
+        if not force and is_already_archived(
+            session_id, project_path, archive_root=archive_root
+        ):
             skipped += 1
             continue
         record = build_archive_record(session_id, project_path, str(transcript_path))
@@ -45,7 +47,11 @@ def run(force: bool) -> tuple[int, int]:
 
 def main():
     parser = argparse.ArgumentParser(description=__doc__)
-    parser.add_argument("--force", action="store_true", help="Re-archive sessions that already exist in the archive")
+    parser.add_argument(
+        "--force",
+        action="store_true",
+        help="Re-archive sessions that already exist in the archive",
+    )
     args = parser.parse_args()
 
     archived, skipped = run(args.force)

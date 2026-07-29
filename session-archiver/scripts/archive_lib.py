@@ -1,5 +1,6 @@
 #!/usr/bin/env python3
 """Shared normalization logic for archive_session.py and backfill.py."""
+
 import json
 import re
 from datetime import datetime, timezone
@@ -39,21 +40,25 @@ def _iter_tool_result_hashes(turns: list):
                 continue
             for value in block.values():
                 if isinstance(value, str):
-                    for match in re.finditer(r"tool-results/([A-Za-z0-9]+)\.txt", value):
+                    for match in re.finditer(
+                        r"tool-results/([A-Za-z0-9]+)\.txt", value
+                    ):
                         yield match.group(1)
 
 
 def read_subagents(session_dir: Path) -> list:
     subagents = []
     for transcript_path in sorted(session_dir.glob("subagents/agent-*.jsonl")):
-        agent_id = transcript_path.stem[len("agent-"):]
+        agent_id = transcript_path.stem[len("agent-") :]
         meta_path = transcript_path.with_suffix(".meta.json")
         meta = json.loads(meta_path.read_text()) if meta_path.exists() else None
-        subagents.append({
-            "agent_id": agent_id,
-            "meta": meta,
-            "turns": read_turns(str(transcript_path)),
-        })
+        subagents.append(
+            {
+                "agent_id": agent_id,
+                "meta": meta,
+                "turns": read_turns(str(transcript_path)),
+            }
+        )
     return subagents
 
 
@@ -69,7 +74,9 @@ def read_tool_results(session_dir: Path, referenced_hashes: set) -> dict:
     return tool_results
 
 
-def build_archive_record(session_id: str, project_path: str, transcript_path: str) -> dict:
+def build_archive_record(
+    session_id: str, project_path: str, transcript_path: str
+) -> dict:
     session_dir = Path(transcript_path).parent
     turns = read_turns(transcript_path)
     subagents = read_subagents(session_dir)
@@ -98,6 +105,8 @@ def write_archive_record(record: dict, archive_root: Path = ARCHIVE_ROOT) -> Pat
     return out_path
 
 
-def is_already_archived(session_id: str, project_path: str, archive_root: Path = ARCHIVE_ROOT) -> bool:
+def is_already_archived(
+    session_id: str, project_path: str, archive_root: Path = ARCHIVE_ROOT
+) -> bool:
     project_dir = archive_root / encode_project_path(project_path)
     return (project_dir / f"{session_id}.json").exists()

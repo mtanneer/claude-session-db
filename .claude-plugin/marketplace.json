@@ -1,0 +1,13 @@
+{
+  "name": "claude-session-db",
+  "owner": {
+    "name": "mtanneer"
+  },
+  "plugins": [
+    {
+      "name": "session-archiver",
+      "source": "./session-archiver",
+      "description": "Archives Claude Code session transcripts into a durable, indexed local store outside Claude Code's own retention policy."
+    }
+  ]
+}

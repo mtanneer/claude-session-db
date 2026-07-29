@@ -1,6 +1,6 @@
 {
   "name": "session-archiver",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "description": "Archives Claude Code session transcripts into a durable, indexed local store outside Claude Code's own retention policy.",
   "license": "MIT",
   "commands": "./commands/"

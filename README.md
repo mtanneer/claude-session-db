@@ -1,4 +1,6 @@
-# claude-session-db
+# Claude Session DB
+
+![version](https://img.shields.io/badge/dynamic/json?url=https://raw.githubusercontent.com/mtanneer/claude-session-db/main/session-archiver/.claude-plugin/plugin.json&query=%24.version&label=version)
 
 A Claude Code plugin marketplace hosting **session-archiver**: a durable,
 outside-the-retention-policy archive of your Claude Code session
@@ -52,7 +54,7 @@ timestamps) is preserved exactly as Claude Code wrote it — wrapped with
 stable metadata, never reinterpreted. `schema_version` exists so future
 changes to *this archive's* format can be detected and migrated.
 
-## What it deliberately doesn't do
+## Non-goals
 
 - **No reconstruction of already-pruned sessions.** `history.jsonl` is
   prompt-only — no assistant turns survive there, so there's nothing to
@@ -88,11 +90,8 @@ uses exactly this mechanism.
 
 ## Development
 
-```
-python3 -m venv .venv
-.venv/bin/pip install pytest
-.venv/bin/python -m pytest session-archiver/scripts/tests/
-```
+See [CONTRIBUTING.md](CONTRIBUTING.md) for setup, test commands, and PR
+conventions.
 
 ## Architecture
 
